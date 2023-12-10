@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vehicle Route Routing App</title>
+    <script
+      type="text/javascript"
+      src="https://www.bing.com/api/maps/mapcontrol?key=Ah_pd0RfP5V2uyEg0e6Y84TMFbj5ccbCl9vuRisgikxLm-811EtiSXR98cZJUboK"
+    ></script>
+    <!-- Include Bootstrap CSS (you can use a CDN) -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+      background: linear-gradient(135deg, #1a1a1a, #333333);
+      color: #0c0202;
+      margin: 0;
+      padding: 0;
+      justify-content: center;
+      align-items: center;
+      background-image: url('C:\Users\harsh\OneDrive\Desktop\vrp_7sem\static\e52623cb8578d625.png');
+      background-position: center;
+      background-size: cover;
+      background-blend-mode: lighten;
+      font-family: "Poppins", sans-serif;
+      background-image: url("map1.jpg");
+      }
+      p {
+        text-align: center;
+        margin: 0; /* Remove default margin for <p> */
+        padding: 10px;
+        font-size: large;
+        font-weight: bold; /* Add some padding for better appearance */
+      } 
+
+      .container {
+        padding: 30px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.5);
+        width: 70%;
+      }
+
+      h1 {
+        color: #333;
+        font-family:Georgia, 'Times New Roman', Times, serif;
+      }
+
+      .card {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(255,255,255, 0.8);
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      }
+
+      .input-group-append button {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        transition: background-color 0.3s ease;
+      }
+
+      .input-group-append button:hover {
+        background-color: #4d8cff;
+      }
+
+      .form-control,
+      .btn {
+        border-radius: 4px;
+      }
+
+      .location-input,
+      .demand-input {
+        width: calc(50% - 10px);
+        display: inline-block;
+        margin-right: 10px;
+      }
+      
+      #result {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #ffffff;
+      border-radius: 5px;
+      color: #333;
+    }
+
+      @media (max-width: 576px) {
+        .location-input,
+        .demand-input {
+          width: 100%;
+          margin-right: 0;
+          margin-bottom: 10px;
+        }
+      }
+      #map {
+        height: 400px;
+      }
+    </style>
+  </head>
+  <body onload="initMap()"></body>
+  <body>
+    <div class="container mt-5">
+      <h1 class="text-center mb-4">VEHICLE ROUTING OPTIMIZER</h1>
+
+      <form id="location-form" action="/fetch" method="POST" onsubmit="return validateForm()">
+        <div class="card p-4 mb-4">
+          <label for="demand-input" style="font-size: 20px;">Number of Demand Locations:</label>
+          <div class="input-group mb-3">
+            <input
+              type="number"
+              class="form-control"
+              id="demand-input"
+              name="demand-input"
+              min="1"
+              required
+            />
+            <div class="input-group-append">
+              <button
+                class="btn btn-success"
+                type="button"
+                onclick="generateLocationInputs()"
+              >
+                Generate
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="locations" class="card p-4"></div>
+
+        <div class="card p-4 mb-4">
+          <button class="btn btn-primary" type="submit">Submit</button>
+        
+        </div>
+        
+        
+      
+        {% if a0 %}
+          <p>{{ a0 }}</p>
+        {% endif %}
+        {% if a1 %}
+          <p>{{ a1 }}</p>
+        {% endif %}
+        {% if a2 %}
+          <p>{{ a2 }}</p>
+        {% endif %}
+        {% if a3 %}
+          <p>{{ a3 }}</p>
+        {% endif %}
+        {% if a4 %}
+          <p>{{ a4 }}</p>
+        {% endif %}
+        {% if a5 %}
+          <p>{{ a5 }}</p>
+        {% endif %}
+        {% if b0 %}
+          <p>{{ b0 }}</p>
+        {% endif %}
+        {% if b1 %}
+          <p>{{ b1 }}</p>
+        {% endif %}
+        {% if b2 %}
+          <p>{{ b2 }}</p>
+        {% endif %}
+        {% if b3 %}
+          <p>{{ b3 }}</p>
+        {% endif %}
+        {% if b4 %}
+          <p>{{ b4 }}</p>
+        {% endif %}
+        {% if tr %}
+          <p>{{ tr }}</p>
+        {% endif %}
+      
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+      // Define predefined location names
+      const predefinedLocationNames = [
+      "Agartala", 
+"Ajmer", 
+"Akola", 
+"Aligarh", 
+"Almora", 
+"Amritsar", 
+"Azamgarh", 
+"Balasore", 
+"Bastar", 
+"Basti", 
+"Belgaum", 
+"Bhagalpur", 
+"Bharatpur", 
+"Bikaner", 
+"Bolangir", 
+"Bundelkhand", 
+"Calicut(Khozikode)", 
+"Chitradurga", 
+"Coimbatore", 
+"Cuddalore", 
+"Darbangha", 
+"Deoghar", 
+"Devipatan", 
+"Dharamshala", 
+"Eranakulam", 
+"Ferozepur", 
+"Gandhinagar", 
+"Ganjam", 
+"Gulbarga", 
+"Gurgaon", 
+"Hoshiarpur", 
+"Jodhpur", 
+"Kadapa", 
+"Kandhamal", 
+"Kolhapur", 
+"Koraput", 
+"Kota", 
+"Kurnool", 
+"Kurukshetra", 
+"Latur", 
+"Madurai", 
+"Mandi", 
+"Manglore", 
+"Mazaffanagar", 
+"Moradabad", 
+"Mysore", 
+"Nagpur", 
+"Nashik", 
+"Nizamabad", 
+"Purnia", 
+"Ratlam", 
+"Rohtak", 
+"Saharanpur", 
+"Salem", 
+"Sarguja", 
+"Silchar", 
+"Sivaganga", 
+"Sundargarh", 
+"Thane", 
+"Thiruvanantapuram", 
+"Tirunelveli", 
+"Trichy", 
+"USNagar", 
+"Visakhapatnam", 
+"Warangal"
+
+      ];
+
+      function generateLocationInputs() {
+        const demandInput = document.getElementById("demand-input");
+        const locationsContainer = document.getElementById("locations");
+        const numberOfLocations = parseInt(demandInput.value);
+
+        // Clear previous location inputs
+        locationsContainer.innerHTML = "";
+
+        // Generate location input fields
+        for (let i = 0; i < numberOfLocations; i++) {
+          // Create div to wrap location and demand inputs
+          const inputGroup = document.createElement("div");
+          inputGroup.className = "input-group mb-2";
+
+          // Create dropdown menu for location names
+          const dropdownMenu = document.createElement("select");
+          dropdownMenu.name = `location_name_${i + 1}`;
+          dropdownMenu.className = "form-control location-input";
+          dropdownMenu.required = true;
+
+          const defaultOption = document.createElement("option");
+          defaultOption.value = ""; // Set the value to an empty string or any value you prefer
+          defaultOption.text = "Select Destination"; // Set the display text for the default option
+          defaultOption.selected = true; // Set this option as the default selected option
+          dropdownMenu.appendChild(defaultOption);
+
+          // Add predefined options to the dropdown menu
+          for (const locationName of predefinedLocationNames) {
+            const option = document.createElement("option");
+            option.value = locationName;
+            option.text = locationName;
+            dropdownMenu.appendChild(option);
+          }
+
+          // Create demand input
+          const inputDemand = document.createElement("input");
+          inputDemand.type = "number";
+          inputDemand.name = `location_demand_${i + 1}`;
+          inputDemand.placeholder = `Demand`;
+          inputDemand.className = "form-control demand-input";
+          inputDemand.required = true;
+
+          inputDemand.oninput = function () {
+            this.value = this.value.replace(/[^0-9]/g, "");
+          };
+
+          // Append dropdown menu and demand input to the input group div
+          inputGroup.appendChild(dropdownMenu);
+          inputGroup.appendChild(inputDemand);
+
+          // Append the input group div to the locations container
+          locationsContainer.appendChild(inputGroup);
+
+          
+        }
+      }
+      function validateForm() {
+    const locationInputs = document.querySelectorAll('.location-input');
+    const demandInputs = document.querySelectorAll('.demand-input');
+
+    // Check if any location or demand input is empty
+    for (const locationInput of locationInputs) {
+      if (locationInput.value === '') {
+        alert('Please fill in all location fields before submitting.');
+        return false;
+      }
+    }
+
+    for (const demandInput of demandInputs) {
+      if (demandInput.value === '') {
+        alert('Please fill in all demand fields before submitting.');
+        return false;
+      }
+    }
+
+    // If all inputs are filled, allow form submission
+    return true;
+  }
+
+    
+  
+
+  
+    
+
+    </script>
+  </body>
+</html>
